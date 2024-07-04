@@ -66,7 +66,7 @@ export class OriginRenderer extends Renderer {
         await this.renderBackground();
 
         this.ctx.fillStyle = "#555555";
-        this.ctx.fillRect(this.guiLeft, this.guiTop, this.WINDOW_WIDTH, ((this.endY - 20) / this.scaledBy));
+        this.ctx.fillRect(this.guiLeft + 7, this.guiTop, this.WINDOW_WIDTH - 14, ((this.endY - 30) / this.scaledBy));
 
         await this.renderOriginContainer();
     }
@@ -104,7 +104,7 @@ export class OriginRenderer extends Renderer {
     }
 
     private async renderOriginContainer() {
-        await this.loadAndDrawImage("/assets/border_start.png", this.guiLeft, this.guiTop, this.WINDOW_WIDTH, this.WINDOW_HEIGHT - 10);
+        await this.loadAndDrawImage("/assets/border_start.png", this.guiLeft, this.guiTop, this.WINDOW_WIDTH, 10);
         await this.loadAndDrawImage("/assets/name_plate.png", this.guiLeft + 10, this.guiTop + 10, 150, 26);
 
         await this.loadAndDrawImage("/assets/feather.png", this.guiLeft + 15, this.guiTop + 15, 16, 16);
@@ -114,8 +114,8 @@ export class OriginRenderer extends Renderer {
 
         this.renderOriginContent();
 
-        await this.loadAndDrawImage("/assets/border_sides.png", this.guiLeft, this.borderEnd - 10, this.WINDOW_WIDTH, this.endY - 162 - 20);
-        await this.loadAndDrawImage("/assets/border_end.png", this.guiLeft, Math.max(this.guiTop + this.WINDOW_HEIGHT - 10, this.endY), this.WINDOW_WIDTH, 10);
+        await this.loadAndDrawImage("/assets/border_sides.png", this.guiLeft, this.guiTop + 10, this.WINDOW_WIDTH, (this.endY / this.scaledBy) - 20);
+        await this.loadAndDrawImage("/assets/border_end.png", this.guiLeft, Math.max(this.guiTop + this.WINDOW_HEIGHT - 10, this.endY / this.scaledBy), this.WINDOW_WIDTH, 10);
     }
 
     private renderOriginContent() {
