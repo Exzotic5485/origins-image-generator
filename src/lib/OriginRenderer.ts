@@ -73,14 +73,9 @@ export class OriginRenderer extends Renderer {
 
     private async init() {
         await this.loadFont("Minecraft", "url('/assets/fonts/minecraftfont.woff')");
-
-        this.dirtBackgroundPattern = this.ctx.createPattern(
-            await this.createDirtCanvas(),
-            "repeat"
-        )!;
     }
 
-    calculateContentEnd() {
+    private calculateContentEnd() {
         const textWidthLimit = this.WINDOW_WIDTH - 48;
         let y = this.guiTop + 57;
 
@@ -98,6 +93,14 @@ export class OriginRenderer extends Renderer {
         }
 
         return y;
+    }
+
+    private async renderBackground() {
+        const backgroundCanvas = await this.createBackgroundCanvas();
+
+        const pattern = this.ctx.createPattern(backgroundCanvas, "repeat")!;
+
+        this.drawPattern(pattern, 0, 0, this.canvas.width, this.canvas.height);
     }
 
     private async renderOriginContainer() {
@@ -157,16 +160,8 @@ export class OriginRenderer extends Renderer {
         }
     }
 
-    private async renderBackground() {
-        this.renderDirtBackground(0, 0, this.canvas.width, this.canvas.height);
 
-    }
-
-    private renderDirtBackground(x: number, y: number, width: number, height: number) {
-        this.drawPattern(this.dirtBackgroundPattern!, x, y, width, height);
-    }
-
-    private async createDirtCanvas() {
+    private async createBackgroundCanvas() {
         const canvas = document.createElement("canvas");
 
         canvas.width = 32;
