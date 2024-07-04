@@ -50,14 +50,14 @@ export class OriginRenderer extends Renderer {
 
         const containerEnd = this.calculateContentEnd();
 
-        this.endY = this.guiTop + containerEnd * this.scaledBy;
+        this.endY = this.guiTop + containerEnd;
 
         const diff = containerEnd - this.WINDOW_HEIGHT;
 
         this.debug(`Diff: ${diff}`);
 
-        if (this.endY > this.canvas.height) {
-            this.canvas.height = this.canvas.height + (this.endY - this.canvas.height) + 20 * this.scaledBy;
+        if (this.endY * this.scaledBy > this.canvas.height) {
+            this.canvas.height = this.canvas.height + (this.endY * this.scaledBy - this.canvas.height) + 20 * this.scaledBy;
             this.canvas.style.height = `${this.canvas.height}px`;
 
             this.scale(this.scaledBy);
@@ -66,7 +66,7 @@ export class OriginRenderer extends Renderer {
         await this.renderBackground();
 
         this.ctx.fillStyle = "#555555";
-        this.ctx.fillRect(this.guiLeft + 7, this.guiTop, this.WINDOW_WIDTH - 14, ((this.endY - 30) / this.scaledBy));
+        this.ctx.fillRect(this.guiLeft + 7, this.guiTop, this.WINDOW_WIDTH - 14, this.endY - 10);
 
         await this.renderOriginContainer();
     }
@@ -114,8 +114,8 @@ export class OriginRenderer extends Renderer {
 
         this.renderOriginContent();
 
-        await this.loadAndDrawImage("/assets/border_sides.png", this.guiLeft, this.guiTop + 10, this.WINDOW_WIDTH, (this.endY / this.scaledBy) - 20);
-        await this.loadAndDrawImage("/assets/border_end.png", this.guiLeft, Math.max(this.guiTop + this.WINDOW_HEIGHT - 10, this.endY / this.scaledBy), this.WINDOW_WIDTH, 10);
+        await this.loadAndDrawImage("/assets/border_sides.png", this.guiLeft, this.guiTop + 10, this.WINDOW_WIDTH, this.endY - 20);
+        await this.loadAndDrawImage("/assets/border_end.png", this.guiLeft, Math.max(this.guiTop + this.WINDOW_HEIGHT - 10, this.endY), this.WINDOW_WIDTH, 10);
     }
 
     private renderOriginContent() {
