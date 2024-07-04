@@ -15,10 +15,6 @@ function App() {
             canvas.style.width = `${canvas.width}px`;
             canvas.style.height = `${canvas.height}px`;
 
-            const ctx = canvas.getContext("2d")!;
-
-            ctx.imageSmoothingEnabled = false;
-
             const renderer = new OriginRenderer(canvas, {
                 name: "Avian",
                 impact: "low",
