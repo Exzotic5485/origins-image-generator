@@ -20,7 +20,6 @@ export class OriginRenderer extends Renderer {
     protected readonly guiLeft: number;
     protected readonly guiTop: number;
 
-
     private dirtBackgroundPattern?: CanvasPattern;
 
     private endY = 0;
@@ -29,20 +28,45 @@ export class OriginRenderer extends Renderer {
 
     readonly origin: OriginData;
 
-    constructor(canvas: HTMLCanvasElement, origin: OriginData) {
+    constructor(canvas: HTMLCanvasElement, origin: OriginData, scale: number = 4) {
         super(canvas);
+
+        this.scale(scale);
 
         this.origin = origin;
 
-        this.guiLeft = (this.canvas.width - this.WINDOW_WIDTH) / 2;
+        this.guiLeft = ((this.canvas.width - this.WINDOW_WIDTH * this.scaledBy) / 2) / this.scaledBy;
         this.guiTop = 10;
         this.borderEnd = this.guiTop + this.WINDOW_HEIGHT - 10;
+        this.backgroundEnd = this.guiTop + this.WINDOW_HEIGHT - 8;
+    }
+
+    debug(...args: string[]) {
+        console.log(`[Debug]\nWindow Height: ${window.innerHeight}\nCanvas Height: ${this.canvas.height}\nScale: ${this.scaledBy}\nContent End: ${this.endY}\nBorder End: ${this.borderEnd}\nBackground End: ${this.backgroundEnd}\n${args.join("\n")}`);
     }
 
     async render() {
         await this.init();
 
+        const containerEnd = this.calculateContentEnd();
+
+        this.endY = this.guiTop + containerEnd * this.scaledBy;
+
+        const diff = containerEnd - this.WINDOW_HEIGHT;
+
+        this.debug(`Diff: ${diff}`);
+
+        if (this.endY > this.canvas.height) {
+            this.canvas.height = this.canvas.height + (this.endY - this.canvas.height) + 20 * this.scaledBy;
+            this.canvas.style.height = `${this.canvas.height}px`;
+
+            this.scale(this.scaledBy);
+        }
+
         await this.renderBackground();
+
+        this.ctx.fillStyle = "#555555";
+        this.ctx.fillRect(this.guiLeft, this.guiTop, this.WINDOW_WIDTH, ((this.endY - 20) / this.scaledBy));
 
         await this.renderOriginContainer();
     }
@@ -85,17 +109,6 @@ export class OriginRenderer extends Renderer {
 
         this.drawTextWithShadow(this.origin.name, this.guiLeft + 39, this.guiTop + 26, this.WINDOW_WIDTH - (62 + 3 * 8))
 
-        // Didnt want to have to calculate the height before hand but it was a pain to resize after...
-        const containerEnd = this.calculateContentEnd(); // where the content ends in absolute Y
-
-        this.endY = this.guiTop + containerEnd;
-
-        const diff = containerEnd - this.WINDOW_HEIGHT;
-
-        if (diff > 0) {
-            this.resizeContainer(diff);
-        }
-
         this.renderOriginContent();
 
         await this.loadAndDrawImage("/assets/border_sides.png", this.guiLeft, this.borderEnd - 10, this.WINDOW_WIDTH, this.endY - 162 - 20);
@@ -124,14 +137,6 @@ export class OriginRenderer extends Renderer {
             const powerNameLines = this.wrapText(power.name, textWidthLimit);
             const powerDescriptionLines = this.wrapText(power.description, textWidthLimit);
 
-            const requiredHeight = (powerNameLines.length * 12 - 12) + (powerDescriptionLines.length * 12) + 20;
-
-            if (y + requiredHeight > this.canvas.height) {
-                console.log(`Y: ${y}\nRequired Height: ${requiredHeight}\nCanvas Height: ${this.canvas.height}\nResizing By: ${y + requiredHeight - this.canvas.height}`);
-                this.resizeContainer(y + requiredHeight - this.canvas.height);
-                console.log(`Height is now: ${this.canvas.height}`);
-            }
-
             for (const powerNameLine of powerNameLines) {
                 this.drawTextWithShadowUnderlined(powerNameLine, x, y, textWidthLimit);
 
@@ -150,33 +155,11 @@ export class OriginRenderer extends Renderer {
 
             y += 20;
         }
-
-        this.endY = y;
-
-        // this.ctx.beginPath()
-        // this.ctx.strokeStyle = "blue"
-        // this.ctx.moveTo(this.guiLeft, this.borderEnd);
-        // this.ctx.lineTo(this.guiLeft + this.WINDOW_WIDTH, this.borderEnd);
-        // this.ctx.stroke();
-    }
-
-    private resizeContainer(amount: number) {        
-        if (this.endY > this.canvas.height) {
-            const oldY = this.canvas.height;
-
-            this.resize(this.canvas.width, this.canvas.height + (this.endY - this.canvas.height) + 10);
-            this.renderDirtBackground(0, oldY, this.canvas.width, this.canvas.height - oldY);
-        }
-
-        this.ctx.fillStyle = "#555555";
-        this.ctx.fillRect(this.guiLeft + 7, this.backgroundEnd, this.WINDOW_WIDTH - 14, amount);
     }
 
     private async renderBackground() {
         this.renderDirtBackground(0, 0, this.canvas.width, this.canvas.height);
 
-        await this.loadAndDrawImage("/assets/background.png", this.guiLeft, this.guiTop, this.WINDOW_WIDTH, this.WINDOW_HEIGHT);
-        this.backgroundEnd = this.guiTop + this.WINDOW_HEIGHT - 8;
     }
 
     private renderDirtBackground(x: number, y: number, width: number, height: number) {

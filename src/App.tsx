@@ -45,72 +45,7 @@ function App() {
                         name: "Featherweight",
                         description:
                             "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
-                    {
-                        name: "Featherweight",
-                        description:
-                            "You fall as gently to the ground as a feather would, unless you sneak.",
-                    },
+                    }
                 ],
             });
 

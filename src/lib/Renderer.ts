@@ -42,16 +42,8 @@ export class Renderer {
 
     }
 
-    scale(scale: number) {
+    protected scale(scale: number) {
         this.scaledBy = scale;
-
-        const scaledWidth = this.canvas.width * scale;
-        const scaledHeight = this.canvas.height * scale;
-
-        this.ctx.translate(
-            -((scaledWidth - this.canvas.width) / 2),
-            -((scaledHeight - this.canvas.height) / 2)
-        );
 
         this.ctx.scale(scale, scale);
     }
