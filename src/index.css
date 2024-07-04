@@ -1,0 +1,9 @@
+canvas {
+    image-rendering: pixelated;
+}
+
+body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
