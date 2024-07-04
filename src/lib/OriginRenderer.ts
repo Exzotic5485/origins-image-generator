@@ -60,11 +60,7 @@ export class OriginRenderer extends Renderer {
         const textWidthLimit = this.WINDOW_WIDTH - 48;
         let y = this.guiTop + 57;
 
-        for (const descriptionLine of this.wrapText(this.origin.description, textWidthLimit)) {
-            y += 12;
-        }
-
-        y += 12;
+        y += this.wrapText(this.origin.description, textWidthLimit).length * 12 + 12;
 
         for (const power of this.origin.powers) {
             if (power.hidden) continue;
@@ -90,11 +86,11 @@ export class OriginRenderer extends Renderer {
         this.drawTextWithShadow(this.origin.name, this.guiLeft + 39, this.guiTop + 26, this.WINDOW_WIDTH - (62 + 3 * 8))
 
         // Didnt want to have to calculate the height before hand but it was a pain to resize after...
-        const containerEnd = this.calculateContentEnd();
+        const containerEnd = this.calculateContentEnd(); // where the content ends in absolute Y
+
+        this.endY = this.guiTop + containerEnd;
 
         const diff = containerEnd - this.WINDOW_HEIGHT;
-
-        this.endY = this.guiTop + this.WINDOW_HEIGHT + diff;
 
         if (diff > 0) {
             this.resizeContainer(diff);
