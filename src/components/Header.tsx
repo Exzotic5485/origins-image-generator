@@ -18,7 +18,7 @@ export default function Header() {
                     variant="secondary"
                     asChild
                 >
-                    <a href="https://github.com/Exzotic5485/origins-gui-renderer">
+                    <a href="https://github.com/Exzotic5485/origins-image-generator">
                         <GithubIcon className="size-5 mr-1 fill-white" />
                         Github
                     </a>
