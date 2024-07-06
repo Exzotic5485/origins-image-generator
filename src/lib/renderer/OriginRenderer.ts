@@ -1,16 +1,7 @@
 import { Renderer } from "./Renderer";
 
-interface OriginData {
-    name: string;
-    impact: "low" | "medium" | "high" | "none";
-    description: string;
-    powers: OriginPowerData[];
-}
-
-interface OriginPowerData {
-    hidden?: boolean;
-    name: string;
-    description: string;
+function removeFormattingCharacters(text: string) {
+    return text.replace(/&[0-9a-u]/g, "");
 }
 
 export class OriginRenderer extends Renderer {
@@ -20,15 +11,11 @@ export class OriginRenderer extends Renderer {
     protected readonly guiLeft: number;
     protected readonly guiTop: number;
 
-    private dirtBackgroundPattern?: CanvasPattern;
-
     private endY = 0;
-    private borderEnd = 0;
-    private backgroundEnd = 0;
 
-    readonly origin: OriginData;
+    readonly origin: RenderableOrigin;
 
-    constructor(canvas: HTMLCanvasElement, origin: OriginData, scale: number = 4) {
+    constructor(canvas: HTMLCanvasElement, origin: RenderableOrigin, scale: number = 4) {
         super(canvas);
 
         this.scale(scale);
@@ -37,24 +24,44 @@ export class OriginRenderer extends Renderer {
 
         this.guiLeft = ((this.canvas.width - this.WINDOW_WIDTH * this.scaledBy) / 2) / this.scaledBy;
         this.guiTop = 10;
-        this.borderEnd = this.guiTop + this.WINDOW_HEIGHT - 10;
-        this.backgroundEnd = this.guiTop + this.WINDOW_HEIGHT - 8;
     }
 
-    debug(...args: string[]) {
-        console.log(`[Debug]\nWindow Height: ${window.innerHeight}\nCanvas Height: ${this.canvas.height}\nScale: ${this.scaledBy}\nContent End: ${this.endY}\nBorder End: ${this.borderEnd}\nBackground End: ${this.backgroundEnd}\n${args.join("\n")}`);
+    static getItemIconURL(icon: string | { item: string } | undefined): string {
+        if (!icon) return this.getItemIconURL("minecraft:stone");
+
+        const iconString = typeof icon === "string" ? icon : icon.item;
+
+        let [namespace, path] = iconString.split(":");
+
+        if (!["minecraft", "origins"].includes(namespace)) {
+            console.log(`Unknown icon: ${iconString}`);
+
+            namespace = "minecraft";
+            path = "stone";
+        }
+
+        return `https://mc-items-cdn.exzotic.xyz/${namespace}/${path}.png`;
+    }
+
+    // Temporary fix until text styling is implemented...
+    fixOriginText() {
+        this.origin.name = this.origin.name ? removeFormattingCharacters(this.origin.name) : "";
+        this.origin.description = this.origin.description ? removeFormattingCharacters(this.origin.description) : "";
+        this.origin.powers = this.origin.powers.map((p) => ({
+            ...p,
+            name: p.name ? removeFormattingCharacters(p.name) : "",
+            description: p.description ? removeFormattingCharacters(p.description) : "",
+        }));
     }
 
     async render() {
+        this.fixOriginText();
+
         await this.init();
 
         const containerEnd = this.calculateContentEnd();
 
         this.endY = this.guiTop + containerEnd;
-
-        const diff = containerEnd - this.WINDOW_HEIGHT;
-
-        this.debug(`Diff: ${diff}`);
 
         if (this.endY * this.scaledBy > this.canvas.height) {
             this.canvas.height = this.canvas.height + (this.endY * this.scaledBy - this.canvas.height) + 20 * this.scaledBy;
@@ -79,13 +86,13 @@ export class OriginRenderer extends Renderer {
         const textWidthLimit = this.WINDOW_WIDTH - 48;
         let y = this.guiTop + 57;
 
-        y += this.wrapText(this.origin.description, textWidthLimit).length * 12 + 12;
+        y += this.wrapText(this.origin.description!, textWidthLimit).length * 12 + 12;
 
         for (const power of this.origin.powers) {
             if (power.hidden) continue;
 
-            const powerNameLines = this.wrapText(power.name, textWidthLimit);
-            const powerDescriptionLines = this.wrapText(power.description, textWidthLimit);
+            const powerNameLines = this.wrapText(power.name!, textWidthLimit);
+            const powerDescriptionLines = this.wrapText(power.description!, textWidthLimit);
 
             const requiredHeight = (powerNameLines.length * 12 - 12) + (powerDescriptionLines.length * 12) + 20;
 
@@ -107,10 +114,11 @@ export class OriginRenderer extends Renderer {
         await this.loadAndDrawImage("/assets/border_start.png", this.guiLeft, this.guiTop, this.WINDOW_WIDTH, 10);
         await this.loadAndDrawImage("/assets/name_plate.png", this.guiLeft + 10, this.guiTop + 10, 150, 26);
 
-        await this.loadAndDrawImage("/assets/feather.png", this.guiLeft + 15, this.guiTop + 15, 16, 16);
         await this.loadAndDrawImage("/assets/impact/low.png", this.guiLeft + 128, this.guiTop + 19, 28, 8);
 
-        this.drawTextWithShadow(this.origin.name, this.guiLeft + 39, this.guiTop + 26, this.WINDOW_WIDTH - (62 + 3 * 8))
+        await this.loadAndDrawImage(OriginRenderer.getItemIconURL(this.origin.icon), this.guiLeft + 15, this.guiTop + 15, 16, 16);
+
+        this.drawTextWithShadow(this.origin.name!, this.guiLeft + 39, this.guiTop + 26, this.WINDOW_WIDTH - (62 + 3 * 8))
 
         this.renderOriginContent();
 
@@ -124,7 +132,7 @@ export class OriginRenderer extends Renderer {
         let x = this.guiLeft + 18;
         let y = this.guiTop + 57;
 
-        for (const descriptionLine of this.wrapText(this.origin.description, textWidthLimit)) {
+        for (const descriptionLine of this.wrapText(this.origin.description!, textWidthLimit)) {
             this.drawTextWithShadow(descriptionLine, x + 2, y, textWidthLimit, {
                 fillStyle: "#CCCCCC",
             });
@@ -137,8 +145,8 @@ export class OriginRenderer extends Renderer {
         for (const power of this.origin.powers) {
             if (power.hidden) continue;
 
-            const powerNameLines = this.wrapText(power.name, textWidthLimit);
-            const powerDescriptionLines = this.wrapText(power.description, textWidthLimit);
+            const powerNameLines = this.wrapText(power.name!, textWidthLimit);
+            const powerDescriptionLines = this.wrapText(power.description!, textWidthLimit);
 
             for (const powerNameLine of powerNameLines) {
                 this.drawTextWithShadowUnderlined(powerNameLine, x, y, textWidthLimit);
@@ -232,6 +240,10 @@ export class OriginRenderer extends Renderer {
         );
 
         this.ctx.restore();
+    }
+
+    override getImageString() {
+        return super.getImageString(this.guiLeft * this.scaledBy, this.guiTop * this.scaledBy, this.WINDOW_WIDTH * this.scaledBy, this.endY * this.scaledBy);
     }
 
     override wrapText(text: string, maxWidth: number) {

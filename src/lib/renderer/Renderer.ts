@@ -31,6 +31,7 @@ export class Renderer {
 
         return new Promise<HTMLImageElement>((resolve) => {
             const image = new Image();
+            image.crossOrigin = "anonymous";
             image.src = imageSource;
 
             image.onload = () => {
@@ -68,8 +69,6 @@ export class Renderer {
 
             const lineWidth = this.ctx.measureText(curLine + testWord).width;
 
-            // console.log(`CURRENT WORD: ${word}\nCURRENT LINE: ${curLine}\nLINES: ${lines}\nCURRENT LINE WIDTH: ${lineWidth}\nMAX WIDTH: ${maxWidth}`)
-
             if (lineWidth > maxWidth && i > 0) {
                 lines.push(curLine);
 
@@ -106,5 +105,19 @@ export class Renderer {
         await fontFace.load();
 
         document.fonts.add(fontFace);
+    }
+
+    getImageString(x: number, y: number, width: number, height: number) {
+        const imageData = this.ctx.getImageData(x, y, width, height);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d")!;
+
+        ctx.putImageData(imageData, 0, 0);
+
+        return canvas.toDataURL("image/png");
     }
 }
