@@ -33,6 +33,7 @@ export default function DatapackDropzone({ onSuccess }: DatapackDropzoneProps) {
 
                 onSuccess?.(datapack);
             } catch (e: any) {
+                console.error(e);
                 setError(e?.message || "An error occurred while parsing the file.");
             }
         },

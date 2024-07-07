@@ -64,7 +64,7 @@ export class Datapack {
     }
 
     private async parsePowers() {
-        const files = Object.entries(this.zip.files).filter((([path]) => path.match(POWER_REGEX)));
+        const files = Object.entries(this.zip.files).filter((([path, file]) => path.match(POWER_REGEX) && !file.dir && file.name.endsWith(".json")));
 
         for (const [path] of files) {
             const [_, namespace, power] = path.match(POWER_REGEX)!;
