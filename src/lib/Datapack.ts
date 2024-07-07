@@ -47,7 +47,7 @@ export class Datapack {
     }
 
     private async parseOrigins() {
-        const files = Object.entries(this.zip.files).filter((([path]) => path.match(ORIGIN_REGEX)));
+        const files = Object.entries(this.zip.files).filter((([path, file]) => path.match(ORIGIN_REGEX) && !file.dir && file.name.endsWith(".json")));
 
         for (const [path] of files) {
             const [_, namespace, origin] = path.match(ORIGIN_REGEX)!;
