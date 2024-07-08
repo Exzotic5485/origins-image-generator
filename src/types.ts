@@ -17,5 +17,7 @@ interface PowerData {
     name?: string;
     description?: string;
     hidden?: boolean;
-    badges?: string[];
+    badges?: {
+        sprite: string;
+    }[];
 }

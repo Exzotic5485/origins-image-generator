@@ -12,8 +12,11 @@ export class OriginRenderer extends Renderer {
     protected readonly guiTop: number;
 
     private endY = 0;
-
+    
     readonly origin: RenderableOrigin;
+    
+    showBadges = true;
+    dataURL: string | undefined;
 
     constructor(canvas: HTMLCanvasElement, origin: RenderableOrigin, scale: number = 4) {
         super(canvas);
@@ -54,7 +57,11 @@ export class OriginRenderer extends Renderer {
         }));
     }
 
-    async render() {
+    async render(showBadges: boolean = true) {
+        this.showBadges = showBadges;
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
         this.fixOriginText();
 
         await this.init();
@@ -76,6 +83,8 @@ export class OriginRenderer extends Renderer {
         this.ctx.fillRect(this.guiLeft + 7, this.guiTop, this.WINDOW_WIDTH - 14, this.endY - 10);
 
         await this.renderOriginContainer();
+
+        this.dataURL = this.getImageString();
     }
 
     private async init() {
@@ -120,13 +129,13 @@ export class OriginRenderer extends Renderer {
 
         this.drawTextWithShadow(this.origin.name!, this.guiLeft + 39, this.guiTop + 26, this.WINDOW_WIDTH - (62 + 3 * 8))
 
-        this.renderOriginContent();
+        await this.renderOriginContent();
 
         await this.loadAndDrawImage("/assets/border_sides.png", this.guiLeft, this.guiTop + 10, this.WINDOW_WIDTH, this.endY - 20);
         await this.loadAndDrawImage("/assets/border_end.png", this.guiLeft, Math.max(this.guiTop + this.WINDOW_HEIGHT - 10, this.endY), this.WINDOW_WIDTH, 10);
     }
 
-    private renderOriginContent() {
+    private async renderOriginContent() {
         const textWidthLimit = this.WINDOW_WIDTH - 48;
 
         let x = this.guiLeft + 18;
@@ -155,6 +164,36 @@ export class OriginRenderer extends Renderer {
             }
 
             y -= 12;
+
+            if (this.showBadges && power.badges) {
+                let badgeStartX = x + this.ctx.measureText(powerNameLines[powerNameLines.length - 1]).width + 1;
+                let badgeEndX = x + 135;
+
+                let badgeOffsetX = 0;
+                let badgeOffsetY = 0;
+
+                for (const badge of power.badges) {
+                    const badgeImage = badge.sprite.match(/[^\/]*$/)?.[0];
+
+                    let badgeX = badgeStartX + 10 * badgeOffsetX;
+                    let badgeY = (y - 8) + 10 * badgeOffsetY;
+
+                    if (badgeX > badgeEndX) {
+                        badgeOffsetX = 0;
+                        badgeOffsetY++;
+
+                        badgeX = badgeStartX = x;
+                        badgeY = (y - 8) + 10 * badgeOffsetY;
+                    }
+
+                    console.log(`[Badge - ${badgeImage}] (${badgeX}, ${badgeY})`);
+                    await this.loadAndDrawImage(`/assets/badge/${badgeImage}`, badgeX, badgeY, 9, 9);
+
+                    badgeOffsetX++;
+                }
+
+                y += badgeOffsetY * 10;
+            }
 
             for (const powerDescriptionLine of powerDescriptionLines) {
                 y += 12;

@@ -2,6 +2,8 @@ import DatapackDropzone from "@/components/DatapackDropzone";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Datapack } from "@/lib/Datapack";
 import { OriginRenderer } from "@/lib/renderer/OriginRenderer";
 import { DownloadIcon, RotateCcwIcon } from "lucide-react";
@@ -10,10 +12,9 @@ import { useState } from "react";
 function App() {
     const [datapack, setDatapack] = useState<Datapack>();
     const [renders, setRenders] = useState<string[]>([]);
+    const [showBadges, setShowBadges] = useState(true);
 
     const onDatapackSuccess = async (datapack: Datapack) => {
-        setDatapack(datapack);
-
         const renders = await Promise.all(
             datapack.origins.map(async (origin) => {
                 const canvas = document.createElement("canvas");
@@ -26,12 +27,13 @@ function App() {
                     datapack.getRenderableOrigin(origin.identifier)
                 );
 
-                await renderer.render();
+                await renderer.render(showBadges);
 
                 return renderer.getImageString();
             })
         );
 
+        setDatapack(datapack);
         setRenders(renders);
     };
 
@@ -65,15 +67,19 @@ function App() {
                         <CardContent>
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {renders.map((imgData, i) => (
-                                    <div>
+                                    <div key={i}>
                                         <Button
-                                            variant="ghost"
+                                            variant="secondary"
                                             size="sm"
                                             asChild
                                         >
                                             <a
                                                 href={imgData}
-                                                download={datapack.origins[i].name || datapack.origins[i].identifier}
+                                                download={
+                                                    datapack.origins[i].name ||
+                                                    datapack.origins[i]
+                                                        .identifier
+                                                }
                                             >
                                                 <DownloadIcon className="size-5 mr-1" />
                                                 Download
@@ -82,7 +88,6 @@ function App() {
                                         <img
                                             className="w-full h-full object-contain"
                                             src={imgData}
-                                            key={imgData}
                                         />
                                     </div>
                                 ))}
@@ -97,6 +102,13 @@ function App() {
                     </h1>
                     <div className="bg-card p-6 rounded-xl max-w-3xl flex-1 mx-auto space-y-8">
                         <DatapackDropzone onSuccess={onDatapackSuccess} />
+                        <div className="flex justify-end items-center space-x-2">
+                            <Switch
+                                checked={showBadges}
+                                onCheckedChange={setShowBadges}
+                            />
+                            <Label>Show Badges</Label>
+                        </div>
                     </div>
                 </div>
             )}
