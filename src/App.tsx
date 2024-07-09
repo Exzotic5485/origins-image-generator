@@ -65,7 +65,7 @@ function App() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid space-y-4 md:space-y-0 md:grid-cols-2 lg:grid-cols-3 gap-[2rem_1rem]">
+                            <div className="grid space-y-4 md:space-y-0 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8">
                                 {renders.map((imgData, i) => (
                                     <div className="flex flex-col gap-4" key={i}>
                                         <Button
