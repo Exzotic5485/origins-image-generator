@@ -44,7 +44,7 @@ function App() {
                 <div className="container px-2 sm:px-4 md:px-8 py-8">
                     <Card>
                         <CardHeader>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
                                 <CardTitle>
                                     Datapack -{" "}
                                     <span className="text-muted-foreground">
@@ -65,12 +65,13 @@ function App() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="grid space-y-4 md:space-y-0 md:grid-cols-2 lg:grid-cols-3 gap-[2rem_1rem]">
                                 {renders.map((imgData, i) => (
-                                    <div key={i}>
+                                    <div className="flex flex-col gap-4" key={i}>
                                         <Button
                                             variant="secondary"
                                             size="sm"
+                                            className="self-start"
                                             asChild
                                         >
                                             <a
