@@ -63,6 +63,7 @@ function App() {
                                     Restart
                                 </Button>
                             </div>
+                            
                         </CardHeader>
                         <CardContent>
                             <div className="grid space-y-4 md:space-y-0 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8">
@@ -87,7 +88,7 @@ function App() {
                                             </a>
                                         </Button>
                                         <img
-                                            className="w-full h-full object-contain"
+                                            className="w-full"
                                             src={imgData}
                                         />
                                     </div>
