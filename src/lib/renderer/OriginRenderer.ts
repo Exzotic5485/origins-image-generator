@@ -1,3 +1,4 @@
+import { BADGE_TEXTURE_LOCATION } from "@/lib/constants";
 import { Renderer } from "./Renderer";
 
 function removeFormattingCharacters(text: string) {
@@ -162,14 +163,14 @@ export class OriginRenderer extends Renderer {
             y -= 12;
 
             if (this.showBadges && power.badges) {
-                let badgeStartX = x + this.ctx.measureText(powerNameLines[powerNameLines.length - 1]).width + 1;
+                let badgeStartX = x + this.measureText(powerNameLines[powerNameLines.length - 1]).width + 4;
                 let badgeEndX = x + 135;
 
                 let badgeOffsetX = 0;
                 let badgeOffsetY = 0;
 
                 for (const badge of power.badges) {
-                    const badgeImage = badge.sprite.match(/[^\/]*$/)?.[0];
+                    const badgeImage = badge.sprite.replace("origins:", BADGE_TEXTURE_LOCATION);
 
                     let badgeX = badgeStartX + 10 * badgeOffsetX;
                     let badgeY = (y - 8) + 10 * badgeOffsetY;
@@ -182,8 +183,7 @@ export class OriginRenderer extends Renderer {
                         badgeY = (y - 8) + 10 * badgeOffsetY;
                     }
 
-                    console.log(`[Badge - ${badgeImage}] (${badgeX}, ${badgeY})`);
-                    await this.loadAndDrawImage(`/assets/badge/${badgeImage}`, badgeX, badgeY, 9, 9);
+                    await this.loadAndDrawImage(badgeImage, badgeX, badgeY, 9, 9);
 
                     badgeOffsetX++;
                 }
@@ -219,17 +219,7 @@ export class OriginRenderer extends Renderer {
     }
 
     private drawTextWithShadowUnderlined(text: string, x: number, y: number, maxWidth: number, style?: Partial<CanvasRenderingContext2D>) {
-        this.ctx.save();
-        this.ctx.font = "8px Minecraft";
-        this.ctx.fillStyle = "white";
-        this.ctx.wordSpacing = "2px";
-
-        this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-        this.ctx.shadowOffsetX = 3;
-        this.ctx.shadowOffsetY = 3;
-        this.ctx.shadowBlur = 0;
-
-        this.ctx.textAlign = "left";
+        this.applyTextStyles();
 
         Object.assign(this.ctx, style);
 
@@ -248,22 +238,12 @@ export class OriginRenderer extends Renderer {
         this.ctx.moveTo(x, y + 1.5);
         this.ctx.lineTo(x + metrics.width, y + 1.5);
         this.ctx.stroke();
-        this.ctx.restore();
+
+        this.restore();
     }
 
     private drawTextWithShadow(text: string, x: number, y: number, maxWidth: number, style?: Partial<CanvasRenderingContext2D>) {
-        this.ctx.save();
-
-        this.ctx.font = "8px Minecraft";
-        this.ctx.fillStyle = "white";
-        this.ctx.wordSpacing = "2px";
-
-        this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-        this.ctx.shadowOffsetX = 3;
-        this.ctx.shadowOffsetY = 3;
-        this.ctx.shadowBlur = 0;
-
-        this.ctx.textAlign = "left";
+        this.applyTextStyles();
 
         Object.assign(this.ctx, style);
 
@@ -274,14 +254,10 @@ export class OriginRenderer extends Renderer {
             maxWidth
         );
 
-        this.ctx.restore();
+        this.restore();
     }
 
-    override getImageString() {
-        return super.getImageString(this.guiLeft * this.scaledBy, this.guiTop * this.scaledBy, this.WINDOW_WIDTH * this.scaledBy, this.endY * this.scaledBy);
-    }
-
-    override wrapText(text: string, maxWidth: number) {
+    private applyTextStyles() {
         this.ctx.save();
         this.ctx.font = "8px Minecraft";
         this.ctx.fillStyle = "white";
@@ -293,10 +269,32 @@ export class OriginRenderer extends Renderer {
         this.ctx.shadowBlur = 0;
 
         this.ctx.textAlign = "left";
+    }
+
+    private restore() {
+        this.ctx.restore();
+    }
+
+    measureText(text: string) {
+        this.applyTextStyles();
+
+        const metrics = this.ctx.measureText(text);
+
+        this.restore();
+
+        return metrics;
+    }
+
+    override getImageString() {
+        return super.getImageString(this.guiLeft * this.scaledBy, this.guiTop * this.scaledBy, this.WINDOW_WIDTH * this.scaledBy, this.endY * this.scaledBy);
+    }
+
+    override wrapText(text: string, maxWidth: number) {
+        this.applyTextStyles();
 
         const result = super.wrapText(text, maxWidth);
 
-        this.ctx.restore();
+        this.restore();
 
         return result;
     }

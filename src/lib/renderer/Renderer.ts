@@ -29,7 +29,7 @@ export class Renderer {
             return this.imageCache.get(imageSource)!;
         }
 
-        return new Promise<HTMLImageElement>((resolve) => {
+        return new Promise<HTMLImageElement>((resolve, reject) => {
             const image = new Image();
             image.crossOrigin = "anonymous";
             image.src = imageSource;
@@ -39,6 +39,10 @@ export class Renderer {
 
                 resolve(image);
             };
+
+            image.onerror = () => {
+                reject(`Failed to load image: ${imageSource}.`);
+            }
         });
 
     }
