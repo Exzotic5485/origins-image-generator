@@ -4,6 +4,15 @@ function removeFormattingCharacters(text: string) {
     return text.replace(/&[0-9a-u]/g, "");
 }
 
+function textComponentToString(textComponent: TextComponent | TextComponent[]) {
+    return typeof textComponent === "string" ? textComponent : Array.isArray(textComponent) ? textComponent.join("") : "";
+}
+
+// Temporary until I add text component styling
+function fixTextComponent(textComponent?: TextComponent | TextComponent[]) {
+    return textComponent ? removeFormattingCharacters(textComponentToString(textComponent)) : "";
+}
+
 export class OriginRenderer extends Renderer {
     protected readonly WINDOW_WIDTH = 176;
     protected readonly WINDOW_HEIGHT = 200;
@@ -12,9 +21,9 @@ export class OriginRenderer extends Renderer {
     protected readonly guiTop: number;
 
     private endY = 0;
-    
+
     readonly origin: RenderableOrigin;
-    
+
     showBadges = true;
     dataURL: string | undefined;
 
@@ -46,23 +55,10 @@ export class OriginRenderer extends Renderer {
         return `https://mc-items-cdn.exzotic.xyz/${namespace}/${path}.png`;
     }
 
-    // Temporary fix until text styling is implemented...
-    fixOriginText() {
-        this.origin.name = this.origin.name ? removeFormattingCharacters(this.origin.name) : "";
-        this.origin.description = this.origin.description ? removeFormattingCharacters(this.origin.description) : "";
-        this.origin.powers = this.origin.powers.map((p) => ({
-            ...p,
-            name: p.name ? removeFormattingCharacters(p.name) : "",
-            description: p.description ? removeFormattingCharacters(p.description) : "",
-        }));
-    }
-
     async render(showBadges: boolean = true) {
         this.showBadges = showBadges;
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        this.fixOriginText();
 
         await this.init();
 
@@ -95,13 +91,13 @@ export class OriginRenderer extends Renderer {
         const textWidthLimit = this.WINDOW_WIDTH - 48;
         let y = this.guiTop + 57;
 
-        y += this.wrapText(this.origin.description!, textWidthLimit).length * 12 + 12;
+        y += this.wrapText(fixTextComponent(this.origin.description), textWidthLimit).length * 12 + 12;
 
         for (const power of this.origin.powers) {
             if (power.hidden) continue;
 
-            const powerNameLines = this.wrapText(power.name!, textWidthLimit);
-            const powerDescriptionLines = this.wrapText(power.description!, textWidthLimit);
+            const powerNameLines = this.wrapText(fixTextComponent(power.name), textWidthLimit);
+            const powerDescriptionLines = this.wrapText(fixTextComponent(power.description), textWidthLimit);
 
             const requiredHeight = (powerNameLines.length * 12 - 12) + (powerDescriptionLines.length * 12) + 20;
 
@@ -127,7 +123,7 @@ export class OriginRenderer extends Renderer {
 
         await this.loadAndDrawImage(OriginRenderer.getItemIconURL(this.origin.icon), this.guiLeft + 15, this.guiTop + 15, 16, 16);
 
-        this.drawTextWithShadow(this.origin.name!, this.guiLeft + 39, this.guiTop + 26, this.WINDOW_WIDTH - (62 + 3 * 8))
+        this.drawTextWithShadow(fixTextComponent(this.origin.name), this.guiLeft + 39, this.guiTop + 26, this.WINDOW_WIDTH - (62 + 3 * 8))
 
         await this.renderOriginContent();
 
@@ -141,7 +137,7 @@ export class OriginRenderer extends Renderer {
         let x = this.guiLeft + 18;
         let y = this.guiTop + 57;
 
-        for (const descriptionLine of this.wrapText(this.origin.description!, textWidthLimit)) {
+        for (const descriptionLine of this.wrapText(fixTextComponent(this.origin.description), textWidthLimit)) {
             this.drawTextWithShadow(descriptionLine, x + 2, y, textWidthLimit, {
                 fillStyle: "#CCCCCC",
             });
@@ -154,8 +150,8 @@ export class OriginRenderer extends Renderer {
         for (const power of this.origin.powers) {
             if (power.hidden) continue;
 
-            const powerNameLines = this.wrapText(power.name!, textWidthLimit);
-            const powerDescriptionLines = this.wrapText(power.description!, textWidthLimit);
+            const powerNameLines = this.wrapText(fixTextComponent(power.name), textWidthLimit);
+            const powerDescriptionLines = this.wrapText(fixTextComponent(power.description), textWidthLimit);
 
             for (const powerNameLine of powerNameLines) {
                 this.drawTextWithShadowUnderlined(powerNameLine, x, y, textWidthLimit);

@@ -1,7 +1,16 @@
+type TextComponent = string | {
+    text: string;
+    color?: string;
+    bold?: boolean;
+    italic?: boolean;
+    strikethrough?: boolean;
+    underlined?: boolean;
+    obfuscated?: boolean;
+}
 type OriginData = {
     identifier: string;
-    name?: string;
-    description?: string;
+    name?: TextComponent | TextComponent[];
+    description?: TextComponent | TextComponent[];
     impact?: "low" | "medium" | "high" | "none";
     icon?: string | {
         item: string;
@@ -14,8 +23,8 @@ type RenderableOrigin = Omit<OriginData, "powers"> & {
 }
 
 interface PowerData {
-    name?: string;
-    description?: string;
+    name?: TextComponent | TextComponent[];
+    description?: TextComponent | TextComponent[];
     hidden?: boolean;
     badges?: {
         sprite: string;
