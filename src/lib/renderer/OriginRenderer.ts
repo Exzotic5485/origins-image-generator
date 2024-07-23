@@ -1,4 +1,4 @@
-import { BADGE_TEXTURE_LOCATION } from "@/lib/constants";
+import { BADGE_TEXTURE_LOCATION, IMPACT_LEVELS } from "@/lib/constants";
 import { Renderer } from "./Renderer";
 
 function removeFormattingCharacters(text: string) {
@@ -120,7 +120,7 @@ export class OriginRenderer extends Renderer {
         await this.loadAndDrawImage("/assets/border_start.png", this.guiLeft, this.guiTop, this.WINDOW_WIDTH, 10);
         await this.loadAndDrawImage("/assets/name_plate.png", this.guiLeft + 10, this.guiTop + 10, 150, 26);
 
-        await this.loadAndDrawImage("/assets/impact/low.png", this.guiLeft + 128, this.guiTop + 19, 28, 8);
+        await this.loadAndDrawImage(`/assets/impact/${IMPACT_LEVELS[this.origin.impact || 0]}.png`, this.guiLeft + 128, this.guiTop + 19, 28, 8);
 
         await this.loadAndDrawImage(OriginRenderer.getItemIconURL(this.origin.icon), this.guiLeft + 15, this.guiTop + 15, 16, 16);
 

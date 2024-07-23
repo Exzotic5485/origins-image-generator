@@ -11,7 +11,7 @@ type OriginData = {
     identifier: string;
     name?: TextComponent | TextComponent[];
     description?: TextComponent | TextComponent[];
-    impact?: "low" | "medium" | "high" | "none";
+    impact?: number;
     icon?: string | {
         item: string;
     };
