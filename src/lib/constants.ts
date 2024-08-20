@@ -346,6 +346,6 @@ export const DEFAULT_POWERS: [string, PowerData][] = [
     ]
 ];
 
-export const BADGE_TEXTURE_LOCATION = "https://raw.githubusercontent.com/apace100/origins-fabric/1.20.4/dev/src/main/resources/assets/origins/"
+export const ORIGINS_ASSETS_LOCATION = "https://raw.githubusercontent.com/apace100/origins-fabric/1.20.4/dev/src/main/resources/assets/origins/";
 
 export const IMPACT_LEVELS = ["none", "low", "medium", "high"];

@@ -1,4 +1,4 @@
-import { BADGE_TEXTURE_LOCATION, IMPACT_LEVELS } from "@/lib/constants";
+import { IMPACT_LEVELS, ORIGINS_ASSETS_LOCATION } from "@/lib/constants";
 import { Renderer } from "./Renderer";
 
 function removeFormattingCharacters(text: string) {
@@ -54,6 +54,18 @@ export class OriginRenderer extends Renderer {
         }
 
         return `https://mc-items-cdn.exzotic.xyz/${namespace}/${path}.png`;
+    }
+
+    static getBadgeSpriteUrl(sprite: string) {
+        const [namespace, path] = sprite.split(":");
+
+        if(namespace == "origins") return ORIGINS_ASSETS_LOCATION + path;
+
+        const matchItemOrBlockTexture = path.match(/textures\/(item|block)\/(.*).png/);
+
+        if(!matchItemOrBlockTexture) return this.getItemIconURL("minecraft:stone");
+
+        return this.getItemIconURL(matchItemOrBlockTexture ? `minecraft:${matchItemOrBlockTexture[2]}` : "minecraft:stone");
     }
 
     async render(showBadges: boolean = true) {
@@ -170,7 +182,7 @@ export class OriginRenderer extends Renderer {
                 let badgeOffsetY = 0;
 
                 for (const badge of power.badges) {
-                    const badgeImage = badge.sprite.replace("origins:", BADGE_TEXTURE_LOCATION);
+                    const badgeImage = OriginRenderer.getBadgeSpriteUrl(badge.sprite);
 
                     let badgeX = badgeStartX + 10 * badgeOffsetX;
                     let badgeY = (y - 8) + 10 * badgeOffsetY;
