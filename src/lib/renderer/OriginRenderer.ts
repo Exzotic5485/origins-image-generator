@@ -74,17 +74,18 @@ export class OriginRenderer extends Renderer {
 
         const containerEnd = this.calculateContentEnd();
 
-        this.endY = this.guiTop + containerEnd;
+        this.endY = containerEnd;
 
+        console.log(this.canvas.width, this.canvas.height)
         if (this.endY * this.scaledBy > this.canvas.height) {
             this.canvas.height = this.canvas.height + (this.endY * this.scaledBy - this.canvas.height);
             this.canvas.style.height = `${this.canvas.height}px`;
-
+            
             this.scale(this.scaledBy);
         }
 
         this.ctx.fillStyle = "#555555";
-        this.ctx.fillRect(this.guiLeft, this.guiTop + 10, this.WINDOW_WIDTH, this.endY - 20);
+        this.ctx.fillRect(0, 10, this.WINDOW_WIDTH, this.endY - 20);
 
         await this.renderOriginContainer();
 
@@ -128,7 +129,7 @@ export class OriginRenderer extends Renderer {
         await this.renderOriginContent();
 
         await this.loadAndDrawImage("/assets/border_sides.png", this.guiLeft, this.guiTop + 10, this.WINDOW_WIDTH, this.endY - 20);
-        await this.loadAndDrawImage("/assets/border_end.png", this.guiLeft, Math.max(this.guiTop + this.WINDOW_HEIGHT - 10, this.endY - 10), this.WINDOW_WIDTH, 10);
+        await this.loadAndDrawImage("/assets/border_end.png", this.guiLeft, this.endY - 10, this.WINDOW_WIDTH, 10);
     }
 
     private async renderOriginContent() {
