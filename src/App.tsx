@@ -6,12 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Datapack } from "@/lib/Datapack";
 import { OriginRenderer } from "@/lib/renderer/OriginRenderer";
+import { saveFile } from "@/lib/utils";
+import JSZip from "jszip";
 import { DownloadIcon, RotateCcwIcon } from "lucide-react";
 import { useState } from "react";
 
 function App() {
     const [datapack, setDatapack] = useState<Datapack>();
-    const [renders, setRenders] = useState<string[]>([]);
+    const [renders, setRenders] = useState<OriginRenderer[]>([]);
     const [showBadges, setShowBadges] = useState(true);
 
     const onDatapackSuccess = async (datapack: Datapack) => {
@@ -29,12 +31,29 @@ function App() {
 
                 await renderer.render(showBadges);
 
-                return renderer.getImageString();
+                return renderer;
             })
         );
 
         setDatapack(datapack);
         setRenders(renders);
+    };
+
+    const handleDownloadAll = async () => {
+        const zip = new JSZip();
+
+        for (let i = 0; i < renders.length; i++) {
+            const render = renders[i];
+
+            zip.file(
+                `${render.origin.name || i}.png`,
+                await renders[i].getBlob()
+            );
+        }
+
+        const file = await zip.generateAsync({ type: "blob" });
+
+        saveFile(file, datapack!.file.name);
     };
 
     return (
@@ -51,24 +70,36 @@ function App() {
                                         {datapack.file.name}
                                     </span>
                                 </CardTitle>
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    onClick={() => {
-                                        setDatapack(undefined);
-                                        setRenders([]);
-                                    }}
-                                >
-                                    <RotateCcwIcon className="size-4 mr-1" />
-                                    Restart
-                                </Button>
+                                <div className="space-x-4">
+                                    <Button
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={handleDownloadAll}
+                                    >
+                                        <DownloadIcon className="size-4 mr-1" />
+                                        Download All
+                                    </Button>
+                                    <Button
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={() => {
+                                            setDatapack(undefined);
+                                            setRenders([]);
+                                        }}
+                                    >
+                                        <RotateCcwIcon className="size-4 mr-1" />
+                                        Restart
+                                    </Button>
+                                </div>
                             </div>
-                            
                         </CardHeader>
                         <CardContent>
                             <div className="grid space-y-4 md:space-y-0 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8">
-                                {renders.map((imgData, i) => (
-                                    <div className="flex flex-col gap-4" key={i}>
+                                {renders.map((render, i) => (
+                                    <div
+                                        className="flex flex-col gap-4"
+                                        key={i}
+                                    >
                                         <Button
                                             variant="secondary"
                                             size="sm"
@@ -76,7 +107,7 @@ function App() {
                                             asChild
                                         >
                                             <a
-                                                href={imgData}
+                                                href={render.dataURL}
                                                 download={
                                                     datapack.origins[i].name ||
                                                     datapack.origins[i]
@@ -89,7 +120,7 @@ function App() {
                                         </Button>
                                         <img
                                             className="w-full"
-                                            src={imgData}
+                                            src={render.dataURL}
                                         />
                                     </div>
                                 ))}

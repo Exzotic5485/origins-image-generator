@@ -4,7 +4,7 @@ export class Renderer {
 
     private imageCache = new Map<string, HTMLImageElement>();
 
-    protected scaledBy: number = 1
+    protected scaledBy: number = 1;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -42,9 +42,8 @@ export class Renderer {
 
             image.onerror = () => {
                 reject(`Failed to load image: ${imageSource}.`);
-            }
+            };
         });
-
     }
 
     protected scale(scale: number) {
@@ -53,7 +52,13 @@ export class Renderer {
         this.ctx.scale(scale, scale);
     }
 
-    drawPattern(pattern: CanvasPattern, x: number, y: number, width: number, height: number) {
+    drawPattern(
+        pattern: CanvasPattern,
+        x: number,
+        y: number,
+        width: number,
+        height: number
+    ) {
         this.ctx.fillStyle = pattern;
 
         this.ctx.rect(x, y, width, height);
@@ -69,7 +74,7 @@ export class Renderer {
         for (let i = 0; i < words.length; i++) {
             const word = words[i];
 
-            const testWord = i == 0 ? word : " " + word
+            const testWord = i == 0 ? word : " " + word;
 
             const lineWidth = this.ctx.measureText(curLine + testWord).width;
 
@@ -90,7 +95,12 @@ export class Renderer {
     }
 
     resize(width: number, height: number) {
-        const data = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        const data = this.ctx.getImageData(
+            0,
+            0,
+            this.canvas.width,
+            this.canvas.height
+        );
 
         this.canvas.width = width;
         this.canvas.height = height;
@@ -101,10 +111,7 @@ export class Renderer {
     }
 
     async loadFont(family: string, source: string) {
-        const fontFace = new FontFace(
-            family,
-            source
-        );
+        const fontFace = new FontFace(family, source);
 
         await fontFace.load();
 
@@ -123,5 +130,15 @@ export class Renderer {
         ctx.putImageData(imageData, 0, 0);
 
         return canvas.toDataURL("image/png");
+    }
+
+    getBlob(): Promise<Blob> {
+        return new Promise((resolve, reject) => {
+            this.canvas.toBlob((blob) =>
+                blob
+                    ? resolve(blob)
+                    : reject("Failed to create Blob from canvas.")
+            );
+        });
     }
 }
