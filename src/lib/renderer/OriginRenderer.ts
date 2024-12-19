@@ -18,8 +18,8 @@ export class OriginRenderer extends Renderer {
     protected readonly WINDOW_WIDTH = 176;
     protected readonly WINDOW_HEIGHT = 200;
 
-    protected readonly guiLeft: number;
-    protected readonly guiTop: number;
+    protected readonly guiLeft = 0;
+    protected readonly guiTop = 0;
 
     private endY = 0;
 
@@ -34,9 +34,6 @@ export class OriginRenderer extends Renderer {
         this.scale(scale);
 
         this.origin = origin;
-
-        this.guiLeft = ((this.canvas.width - this.WINDOW_WIDTH * this.scaledBy) / 2) / this.scaledBy;
-        this.guiTop = 10;
     }
 
     static getItemIconURL(icon: string | { item: string } | undefined): string {
@@ -80,16 +77,14 @@ export class OriginRenderer extends Renderer {
         this.endY = this.guiTop + containerEnd;
 
         if (this.endY * this.scaledBy > this.canvas.height) {
-            this.canvas.height = this.canvas.height + (this.endY * this.scaledBy - this.canvas.height) + 20 * this.scaledBy;
+            this.canvas.height = this.canvas.height + (this.endY * this.scaledBy - this.canvas.height);
             this.canvas.style.height = `${this.canvas.height}px`;
 
             this.scale(this.scaledBy);
         }
 
-        await this.renderBackground();
-
         this.ctx.fillStyle = "#555555";
-        this.ctx.fillRect(this.guiLeft + 7, this.guiTop, this.WINDOW_WIDTH - 14, this.endY - 10);
+        this.ctx.fillRect(this.guiLeft, this.guiTop + 10, this.WINDOW_WIDTH, this.endY - 20);
 
         await this.renderOriginContainer();
 
@@ -120,14 +115,6 @@ export class OriginRenderer extends Renderer {
         return y;
     }
 
-    private async renderBackground() {
-        const backgroundCanvas = await this.createBackgroundCanvas();
-
-        const pattern = this.ctx.createPattern(backgroundCanvas, "repeat")!;
-
-        this.drawPattern(pattern, 0, 0, this.canvas.width, this.canvas.height);
-    }
-
     private async renderOriginContainer() {
         await this.loadAndDrawImage("/assets/border_start.png", this.guiLeft, this.guiTop, this.WINDOW_WIDTH, 10);
         await this.loadAndDrawImage("/assets/name_plate.png", this.guiLeft + 10, this.guiTop + 10, 150, 26);
@@ -141,7 +128,7 @@ export class OriginRenderer extends Renderer {
         await this.renderOriginContent();
 
         await this.loadAndDrawImage("/assets/border_sides.png", this.guiLeft, this.guiTop + 10, this.WINDOW_WIDTH, this.endY - 20);
-        await this.loadAndDrawImage("/assets/border_end.png", this.guiLeft, Math.max(this.guiTop + this.WINDOW_HEIGHT - 10, this.endY), this.WINDOW_WIDTH, 10);
+        await this.loadAndDrawImage("/assets/border_end.png", this.guiLeft, Math.max(this.guiTop + this.WINDOW_HEIGHT - 10, this.endY - 10), this.WINDOW_WIDTH, 10);
     }
 
     private async renderOriginContent() {
@@ -215,21 +202,6 @@ export class OriginRenderer extends Renderer {
         }
     }
 
-
-    private async createBackgroundCanvas() {
-        const canvas = document.createElement("canvas");
-
-        canvas.width = 32;
-        canvas.height = 32;
-
-        const renderer = new Renderer(canvas);
-        renderer.ctx.filter = "brightness(0.25)";
-
-        await renderer.loadAndDrawImage("/assets/dirt_background.png", 0, 0, 32, 32);
-
-        return canvas;
-    }
-
     private drawTextWithShadowUnderlined(text: string, x: number, y: number, maxWidth: number, style?: Partial<CanvasRenderingContext2D>) {
         this.applyTextStyles();
 
@@ -298,7 +270,7 @@ export class OriginRenderer extends Renderer {
     }
 
     override getImageString() {
-        return super.getImageString(this.guiLeft * this.scaledBy, this.guiTop * this.scaledBy, this.WINDOW_WIDTH * this.scaledBy, this.endY * this.scaledBy);
+        return super.getImageString(0, 0, this.canvas.width, this.canvas.height);
     }
 
     override wrapText(text: string, maxWidth: number) {
