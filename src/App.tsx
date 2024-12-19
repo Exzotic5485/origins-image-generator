@@ -45,10 +45,7 @@ function App() {
         for (let i = 0; i < renders.length; i++) {
             const render = renders[i];
 
-            zip.file(
-                `${render.origin.name || i}.png`,
-                await renders[i].getBlob()
-            );
+            zip.file(`${render.origin.name || i}.png`, await render.getBlob());
         }
 
         const file = await zip.generateAsync({ type: "blob" });
