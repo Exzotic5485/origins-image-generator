@@ -42,6 +42,11 @@ export class OriginRenderer extends Renderer {
         const iconString = typeof icon === "string" ? icon : icon.item;
 
         let [namespace, path] = iconString.split(":");
+        
+        if(!path) {
+            path = namespace;
+            namespace = "minecraft";
+        }
 
         if (!["minecraft", "origins"].includes(namespace)) {
             console.log(`Unknown icon: ${iconString}`);
