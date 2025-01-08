@@ -1,4 +1,5 @@
 import DatapackDropzone from "@/components/DatapackDropzone";
+import ErrorCard from "@/components/ErrorCard";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -57,7 +58,15 @@ function App() {
         <div>
             <Header />
             {datapack ? (
-                <div className="container px-2 sm:px-4 md:px-8 py-8">
+                <div className="container px-2 sm:px-4 md:px-8 py-8 space-y-8">
+                    <div className="flex flex-col gap-4">
+                        {datapack.errors.map((error, i) => (
+                            <ErrorCard
+                                key={i}
+                                error={error}
+                            />
+                        ))}
+                    </div>
                     <Card>
                         <CardHeader>
                             <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
