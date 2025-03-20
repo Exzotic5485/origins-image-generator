@@ -1,12 +1,14 @@
 import JSZip from "jszip";
-import { DEFAULT_ORIGINS, DEFAULT_POWERS } from "./constants";
+import { DEFAULT_BADGES, DEFAULT_ORIGINS, DEFAULT_POWERS } from "./constants";
 
-const ORIGIN_REGEX = /data\/([^\/]+)\/origins\/(.+)/;
-const POWER_REGEX = /data\/([^\/]+)\/powers\/(.+)/;
+const ORIGIN_REGEX = /data\/([^\/]+)\/origins\/(.+)\.json/;
+const POWER_REGEX = /data\/([^\/]+)\/powers\/(.+)\.json/;
+const BADGE_REGEX = /data\/([^\/]+)\/badges\/(.+)\.json/;
 
 export enum DatapackParseErrorType {
     ORIGIN = "ORIGIN",
     POWER = "POWER",
+    BADGE = "BADGE",
 }
 
 export type DatapackParseError = {
@@ -22,6 +24,7 @@ export class Datapack {
 
     origins: OriginData[] = [...DEFAULT_ORIGINS];
     powers: Map<string, PowerData> = new Map(DEFAULT_POWERS);
+    badges: Map<string, BadgeData> = new Map(DEFAULT_BADGES);
     errors: DatapackParseError[] = [];
 
     constructor(file: File) {
@@ -35,7 +38,11 @@ export class Datapack {
         if (!this.isValidDatapack())
             throw new Error("Invalid datapack provided.");
 
-        await Promise.all([this.parseOrigins(), this.parsePowers()]);
+        await Promise.all([
+            this.parseOrigins(),
+            this.parsePowers(),
+            this.parseBadges(),
+        ]);
 
         return this;
     }
@@ -53,25 +60,40 @@ export class Datapack {
             ...origin,
             powers:
                 origin.powers
-                    ?.map((power) => this.powers.get(power)!)
-                    .filter(Boolean) || [],
+                    ?.map((power) => this.getRenderablePower(power))
+                    .filter((power) => power !== null) || [],
         };
 
         return renderableOrigin;
     }
 
+    getRenderablePower(identifier: string): RenderablePower | null {
+        const power = this.powers.get(identifier);
+
+        if (!power) return null;
+
+        const renderablePower: RenderablePower = {
+            ...power,
+            badges:
+                power.badges
+                    ?.map((badge) =>
+                        typeof badge === "string"
+                            ? this.badges.get(badge)
+                            : badge
+                    )
+                    .filter((badge) => badge !== undefined) || [],
+        };
+
+        return renderablePower;
+    }
+
     private async parseOrigins() {
-        const files = Object.entries(this.zip.files).filter(
-            ([path, file]) =>
-                path.match(ORIGIN_REGEX) &&
-                !file.dir &&
-                file.name.endsWith(".json")
-        );
+        const files = this.getMatchingFiles(ORIGIN_REGEX);
 
         for (const [path] of files) {
             const [_, namespace, origin] = path.match(ORIGIN_REGEX)!;
 
-            const identifier = `${namespace}:${origin.replace(".json", "")}`;
+            const identifier = `${namespace}:${origin}`;
 
             try {
                 const stringContents = await this.getFileContents(path);
@@ -94,17 +116,12 @@ export class Datapack {
     }
 
     private async parsePowers() {
-        const files = Object.entries(this.zip.files).filter(
-            ([path, file]) =>
-                path.match(POWER_REGEX) &&
-                !file.dir &&
-                file.name.endsWith(".json")
-        );
+        const files = this.getMatchingFiles(POWER_REGEX);
 
         for (const [path] of files) {
             const [_, namespace, power] = path.match(POWER_REGEX)!;
 
-            const identifier = `${namespace}:${power.replace(".json", "")}`;
+            const identifier = `${namespace}:${power}`;
 
             try {
                 const stringContents = await this.getFileContents(path);
@@ -121,6 +138,37 @@ export class Datapack {
                 });
             }
         }
+    }
+
+    private async parseBadges() {
+        const files = this.getMatchingFiles(BADGE_REGEX);
+
+        for (const [path] of files) {
+            const [_, namespace, badge] = path.match(BADGE_REGEX)!;
+
+            const identifier = `${namespace}:${badge}`;
+
+            try {
+                const stringContents = await this.getFileContents(path);
+
+                const jsonContents = JSON.parse(stringContents);
+
+                this.badges.set(identifier, jsonContents);
+            } catch (e: any) {
+                this.errors.push({
+                    type: DatapackParseErrorType.BADGE,
+                    error: e?.message ?? e,
+                    filePath: path,
+                    identifier,
+                });
+            }
+        }
+    }
+
+    private getMatchingFiles(regex: RegExp) {
+        return Object.entries(this.zip.files).filter(
+            ([path, file]) => path.match(regex) && !file.dir
+        );
     }
 
     private getFileContents(path: string) {
