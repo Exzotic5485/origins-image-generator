@@ -1,4 +1,4 @@
-import { IMPACT_LEVELS, ORIGINS_ASSETS_LOCATION } from "@/lib/constants";
+import { ASSETS_LOCATION, IMPACT_LEVELS, ORIGINS_ASSETS_LOCATION } from "@/lib/constants";
 import { Renderer } from "./Renderer";
 
 function removeFormattingCharacters(text: string) {
@@ -55,7 +55,7 @@ export class OriginRenderer extends Renderer {
             path = "stone";
         }
 
-        return `https://mc-items-cdn.exzotic.xyz/${namespace}/${path}.png`;
+        return `${ASSETS_LOCATION}/${namespace}/${path}.png`;
     }
 
     static getBadgeSpriteUrl(sprite: string) {

@@ -1,5 +1,6 @@
 import GithubIcon from "@/components/icons/GithubIcon";
 import { Button } from "@/components/ui/button";
+import { ASSETS_LOCATION } from "@/lib/constants";
 
 export default function Header() {
     return (
@@ -8,7 +9,7 @@ export default function Header() {
                 <a href="/" className="flex items-center gap-1">
                     <img
                         className="size-12 image-pixelated"
-                        src="https://mc-items-cdn.exzotic.xyz/origins/orb_of_origin.png"
+                        src={`${ASSETS_LOCATION}/origins/orb_of_origin.png`}
                     />
                     <h1 className="text-base sm:text-xl md:text-2xl tracking-tight font-semibold">
                         Origins Image Generator
