@@ -2,7 +2,7 @@ import { ASSETS_LOCATION, IMPACT_LEVELS, ORIGINS_ASSETS_LOCATION } from "@/lib/c
 import { Renderer } from "./Renderer";
 
 function removeFormattingCharacters(text: string) {
-    return text.replace(/&[0-9a-u]/g, "");
+    return text.replace(/[&§][0-9a-u]/g, "");
 }
 
 function textComponentToString(textComponent: TextComponent | TextComponent[]) {
