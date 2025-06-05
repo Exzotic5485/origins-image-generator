@@ -36,7 +36,9 @@ export class Datapack {
         await this.zip.loadAsync(this.file);
 
         if (!this.isValidDatapack())
-            throw new Error("Invalid datapack provided.");
+            throw new Error(
+                "Datapack must be a valid minecraft datapack, this pack does not include a 'pack.mcmeta' file."
+            );
 
         await Promise.all([
             this.parseOrigins(),
@@ -48,7 +50,9 @@ export class Datapack {
     }
 
     isValidDatapack() {
-        return Boolean(this.zip.files["pack.mcmeta"]);
+        return Object.keys(this.zip.files).some((path) =>
+            path.includes("pack.mcmeta")
+        );
     }
 
     getRenderableOrigin(identifier: string) {
