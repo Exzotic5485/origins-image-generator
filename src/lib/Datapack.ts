@@ -107,6 +107,7 @@ export class Datapack {
                 this.origins.push({
                     ...jsonContents,
                     identifier,
+                    icon: this.getIconItem(jsonContents?.icon),
                 });
             } catch (e: any) {
                 this.errors.push({
@@ -177,5 +178,9 @@ export class Datapack {
 
     private getFileContents(path: string) {
         return this.zip.file(path)!.async("string");
+    }
+
+    private getIconItem(icon: Icon) {
+        return typeof icon === "string" ? icon : icon?.id || icon?.item;
     }
 }

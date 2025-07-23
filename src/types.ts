@@ -15,11 +15,7 @@ type OriginData = {
     name?: TextComponent | TextComponent[];
     description?: TextComponent | TextComponent[];
     impact?: number;
-    icon?:
-        | string
-        | {
-              item: string;
-          };
+    icon?: string;
     powers?: string[];
 };
 
@@ -43,3 +39,5 @@ type BadgeData = {
     sprite: string;
     text?: string;
 };
+
+type Icon = string | { id?: string; item?: string } | undefined;

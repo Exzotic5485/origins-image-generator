@@ -36,12 +36,10 @@ export class OriginRenderer extends Renderer {
         this.origin = origin;
     }
 
-    static getItemIconURL(icon: string | { item: string } | undefined): string {
+    static getItemIconURL(icon?: string): string {
         if (!icon) return this.getItemIconURL("minecraft:stone");
 
-        const iconString = typeof icon === "string" ? icon : icon.item;
-
-        let [namespace, path] = iconString.split(":");
+        let [namespace, path] = icon.split(":");
         
         if(!path) {
             path = namespace;
@@ -49,7 +47,7 @@ export class OriginRenderer extends Renderer {
         }
 
         if (!["minecraft", "origins"].includes(namespace)) {
-            console.log(`Unknown icon: ${iconString}`);
+            console.log(`Unknown icon: ${icon}`);
 
             namespace = "minecraft";
             path = "stone";
