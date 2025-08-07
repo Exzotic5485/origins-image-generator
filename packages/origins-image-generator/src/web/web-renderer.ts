@@ -1,6 +1,6 @@
 import { BaseRenderer } from "../base-renderer";
 import { EMBEDED_ASSETS } from "../constants";
-import type { OriginRenderData } from "../types";
+import type { OriginRenderData, RenderConfig } from "../types";
 
 type WebRenderResult = {
     blob(type?: string, quality?: number): Promise<Blob | null>;
@@ -15,12 +15,12 @@ export class WebRenderer extends BaseRenderer<
 > {
     private readonly imageCache = new Map<string, HTMLImageElement>();
 
-    constructor(renderData: OriginRenderData, canvas?: HTMLCanvasElement) {
+    constructor(renderData: OriginRenderData, canvas?: HTMLCanvasElement, config?: RenderConfig) {
         if (!canvas) {
             canvas = document.createElement("canvas");
         }
 
-        super(canvas, renderData);
+        super(canvas, renderData, config);
     }
 
     createRenderResult(): WebRenderResult {

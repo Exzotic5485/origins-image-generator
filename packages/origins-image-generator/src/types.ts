@@ -51,3 +51,7 @@ export type DatapackParseError = {
     error: string;
     identifier: string;
 };
+
+export type RenderConfig = {
+    showBadges?: boolean;
+};

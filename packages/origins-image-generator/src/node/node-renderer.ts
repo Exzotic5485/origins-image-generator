@@ -6,7 +6,7 @@ import {
 } from "@napi-rs/canvas";
 import { BaseRenderer } from "../base-renderer";
 import { EMBEDED_ASSETS } from "../constants";
-import type { OriginRenderData } from "../types";
+import type { OriginRenderData, RenderConfig } from "../types";
 
 type NodeRenderResult = Canvas;
 
@@ -15,7 +15,11 @@ export class NodeRenderer extends BaseRenderer<
     SKRSContext2D,
     NodeRenderResult
 > {
-    constructor(renderData: OriginRenderData, canvas?: Canvas) {
+    constructor(
+        renderData: OriginRenderData,
+        canvas?: Canvas,
+        config?: RenderConfig
+    ) {
         if (!canvas) {
             canvas = new Canvas(
                 NodeRenderer.BASE_WIDTH,
@@ -23,7 +27,7 @@ export class NodeRenderer extends BaseRenderer<
             );
         }
 
-        super(canvas, renderData);
+        super(canvas, renderData, config);
     }
 
     createRenderResult(): NodeRenderResult {

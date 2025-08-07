@@ -1,6 +1,6 @@
 import type { Canvas, SKRSContext2D } from "@napi-rs/canvas";
 import { EMBEDED_ASSETS, IMPACT_LEVELS } from "./constants";
-import type { OriginRenderData } from "./types";
+import type { OriginRenderData, RenderConfig } from "./types";
 import { fixTextComponent, getBadgeSpriteUrl, getItemIconURL } from "./utils";
 
 export abstract class BaseRenderer<
@@ -16,14 +16,20 @@ export abstract class BaseRenderer<
     static readonly BASE_HEIGHT = 200;
 
     readonly xyScale = 4;
-    readonly showBadges = true;
 
     protected endY = 0;
 
-    constructor(canvas: TCanvas, renderData: OriginRenderData) {
+    protected config: RenderConfig;
+
+    constructor(
+        canvas: TCanvas,
+        renderData: OriginRenderData,
+        config?: RenderConfig
+    ) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d")! as TCTX;
         this.renderData = renderData;
+        this.config = config ?? {};
 
         this.canvas.width = BaseRenderer.BASE_WIDTH * this.xyScale;
         this.canvas.height = BaseRenderer.BASE_HEIGHT * this.xyScale;
@@ -203,7 +209,7 @@ export abstract class BaseRenderer<
 
             y -= 12;
 
-            if (this.showBadges && power.badges) {
+            if (this.config.showBadges && (power.badges?.length ?? 0) > 0) {
                 let badgeStartX =
                     x +
                     this.measureText(powerNameLines[powerNameLines.length - 1]!)
