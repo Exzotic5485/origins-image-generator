@@ -35,7 +35,9 @@
     },
     "author": "Exzotic <contact@exzotic.dev>",
     "dependencies": {
-        "@napi-rs/canvas": "^0.1.74",
         "jszip": "^3.10.1"
+    },
+    "optionalDependencies": {
+        "@napi-rs/canvas": "^0.1.74"
     }
 }
