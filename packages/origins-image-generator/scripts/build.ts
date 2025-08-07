@@ -29,4 +29,7 @@ const cjs = () =>
 
 const tsc = () => $`tsc --project tsconfig.types.json`;
 
-await Promise.all([esm(), cjs(), tsc()]);
+const readme = () => $`rm -f README.md && cp ../../README.md ./README.md`;
+
+await $`rm -rf dist`;
+await Promise.all([esm(), cjs(), tsc(), readme()]);
