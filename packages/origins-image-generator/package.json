@@ -1,0 +1,31 @@
+{
+    "name": "origins-image-generator",
+    "version": "0.0.0",
+    "main": "./dist/cjs/index.js",
+    "module": "./dist/esm/index.js",
+    "types": "./dist/types/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/esm/index.js",
+            "require": "./dist/cjs/index.js",
+            "types": "./dist/types/index.d.ts"
+        },
+        "./web": {
+            "import": "./dist/esm/web/index.js",
+            "require": "./dist/cjs/web/index.js",
+            "types": "./dist/types/web/index.d.ts"
+        },
+        "./node": {
+            "import": "./dist/esm/node/index.js",
+            "require": "./dist/cjs/node/index.js",
+            "types": "./dist/types/node/index.d.ts"
+        }
+    },
+    "scripts": {
+        "build": "rm -rf dist && bun ./scripts/build.ts"
+    },
+    "dependencies": {
+        "@napi-rs/canvas": "^0.1.74",
+        "jszip": "^3.10.1"
+    }
+}
