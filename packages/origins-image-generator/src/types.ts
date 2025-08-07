@@ -19,10 +19,11 @@ export type Badge = {
     text?: string;
 };
 
+export type CombinedPowerBadges = Power & { badges: Badge[] };
+
 export type OriginRenderData = {
     origin: Origin;
-    powers: Power[];
-    badges: Badge[];
+    powers: CombinedPowerBadges[];
 };
 
 export type TextComponent =

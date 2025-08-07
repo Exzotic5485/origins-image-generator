@@ -2,6 +2,7 @@ import JSZip from "jszip";
 import { DEFAULT_BADGES, DEFAULT_POWERS } from "./constants";
 import {
     type Badge,
+    type CombinedPowerBadges,
     type DatapackParseError,
     type Origin,
     type OriginRenderData,
@@ -49,15 +50,25 @@ export class Datapack {
         const powers = this.powers
             .entries()
             .filter(([id]) => origin.powers?.includes(id))
-            .map(([, power]) => power)
+            .map(([, power]) => this.getCombinedPowerBadges(power))
             .toArray();
-
-        const badges: Badge[] = [];
 
         return {
             origin,
             powers,
-            badges,
+        };
+    }
+
+    private getCombinedPowerBadges(power: Power): CombinedPowerBadges {
+        const resolvedBadges = (power.badges ?? [])
+            .map((badge) =>
+                typeof badge === "string" ? this.badges.get(badge) : badge
+            )
+            .filter((badge) => badge !== undefined);
+
+        return {
+            ...power,
+            badges: resolvedBadges,
         };
     }
 

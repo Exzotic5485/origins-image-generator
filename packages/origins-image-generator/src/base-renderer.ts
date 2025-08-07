@@ -220,7 +220,7 @@ export abstract class BaseRenderer<
                 let badgeOffsetX = 0;
                 let badgeOffsetY = 0;
 
-                for (const badge of this.renderData.badges) {
+                for (const badge of power.badges) {
                     const badgeImage = getBadgeSpriteUrl(badge.sprite);
 
                     let badgeX = badgeStartX + 10 * badgeOffsetX;

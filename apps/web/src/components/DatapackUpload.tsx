@@ -11,7 +11,9 @@ export default function DatapackUpload() {
     const onDatapackSuccess = async (datapack: Datapack) => {
         const renders = await Promise.all(
             [...datapack.origins.entries()].map(async ([id, origin]) => {
-                const result = await renderOriginImage(datapack, id);
+                const result = await renderOriginImage(datapack, id, {
+                    showBadges,
+                });
 
                 return {
                     dataURL: result.dataURL(),
