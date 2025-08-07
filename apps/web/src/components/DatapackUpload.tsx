@@ -2,8 +2,7 @@ import DatapackDropzone from "@/components/DatapackDropzone";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAppContext } from "@/context/AppContext";
-import type { Datapack } from "@/lib/Datapack";
-import { OriginRenderer } from "@/lib/renderer/OriginRenderer";
+import { Datapack, renderOriginImage } from "origins-image-generator/web";
 
 export default function DatapackUpload() {
     const { showBadges, setDatapack, setShowBadges, setRenders } =
@@ -11,20 +10,13 @@ export default function DatapackUpload() {
 
     const onDatapackSuccess = async (datapack: Datapack) => {
         const renders = await Promise.all(
-            datapack.origins.map(async (origin) => {
-                const canvas = document.createElement("canvas");
+            [...datapack.origins.entries()].map(async ([id, origin]) => {
+                const result = await renderOriginImage(datapack, id);
 
-                canvas.width = 704;
-                canvas.height = 300;
-
-                const renderer = new OriginRenderer(
-                    canvas,
-                    datapack.getRenderableOrigin(origin.identifier)
-                );
-
-                await renderer.render(showBadges);
-
-                return renderer;
+                return {
+                    dataURL: result.dataURL(),
+                    origin,
+                };
             })
         );
 

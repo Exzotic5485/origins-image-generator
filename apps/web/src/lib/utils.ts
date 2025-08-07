@@ -13,3 +13,23 @@ export function saveFile(file: Blob, fileName: string) {
 
     a.click();
 }
+
+export function dataURLToBase64(dataURL: string) {
+    const [, base64] = dataURL.split("base64,");
+
+    if (!base64)
+        throw new Error("Data URL provided does not contain a base64 string");
+
+    return base64;
+}
+
+export function generateRandomFileName(
+    ext?: string,
+    prefix = "origins-image-generator"
+) {
+    const date = new Date();
+
+    return `${prefix}_${date.getDay()}-${date.getMonth()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}${
+        ext ? `.${ext}` : ""
+    }`;
+}

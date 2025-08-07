@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import type { DatapackParseError } from "@/lib/Datapack";
+import type { DatapackParseError } from "origins-image-generator/web";
 import { CircleAlertIcon } from "lucide-react";
 
 type ErrorCardProps = {

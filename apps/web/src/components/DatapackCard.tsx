@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppContext } from "@/context/AppContext";
-import { saveFile } from "@/lib/utils";
+import { dataURLToBase64, generateRandomFileName, saveFile } from "@/lib/utils";
 import JSZip from "jszip";
 import { DownloadIcon, RotateCcwIcon } from "lucide-react";
 
@@ -16,24 +16,22 @@ export default function DatapackCard() {
         for (let i = 0; i < renders.length; i++) {
             const render = renders[i];
 
-            zip.file(`${render.origin.name || i}.png`, await render.getBlob());
+            zip.file(
+                `${render.origin.name || i}.png`,
+                dataURLToBase64(render.dataURL)
+            );
         }
 
         const file = await zip.generateAsync({ type: "blob" });
 
-        saveFile(file, datapack.file.name);
+        saveFile(file, generateRandomFileName("zip"));
     };
 
     return (
         <Card>
             <CardHeader>
                 <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
-                    <CardTitle>
-                        Datapack -{" "}
-                        <span className="text-muted-foreground">
-                            {datapack.file.name}
-                        </span>
-                    </CardTitle>
+                    <CardTitle>Datapack Origins</CardTitle>
                     <div className="space-x-4">
                         <Button
                             variant="secondary"
@@ -69,10 +67,7 @@ export default function DatapackCard() {
                             >
                                 <a
                                     href={render.dataURL}
-                                    download={
-                                        render.origin.name ||
-                                        render.origin.identifier
-                                    }
+                                    download={generateRandomFileName()}
                                 >
                                     <DownloadIcon className="size-5 mr-1" />
                                     Download

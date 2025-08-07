@@ -2,7 +2,7 @@ import { useDropzone } from "react-dropzone";
 import { FileArchiveIcon } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Datapack } from "@/lib/Datapack";
+import { Datapack } from "origins-image-generator/web";
 
 type DatapackDropzoneProps = {
     onSuccess?: (datapack: Datapack) => void;
@@ -27,14 +27,14 @@ export default function DatapackDropzone({ onSuccess }: DatapackDropzoneProps) {
             setError("");
 
             try {
-                const datapack = new Datapack(files[0]);
-
-                await datapack.parse();
+                const datapack = await Datapack.fromFile(files[0]);
 
                 onSuccess?.(datapack);
             } catch (e: any) {
                 console.error(e);
-                setError(e?.message || "An error occurred while parsing the file.");
+                setError(
+                    e?.message || "An error occurred while parsing the file."
+                );
             }
         },
         onDropRejected: () => {
