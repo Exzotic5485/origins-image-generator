@@ -13,7 +13,7 @@
         "clsx": "^2.1.1",
         "jszip": "^3.10.1",
         "lucide-react": "^0.400.0",
-        "origins-image-generator": "workspace:*",
+        "origins-image-generator": "^1.0.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-dropzone": "^14.2.3",
@@ -38,10 +38,12 @@
     },
     "packages/origins-image-generator": {
       "name": "origins-image-generator",
-      "version": "0.0.0",
+      "version": "1.0.0",
       "dependencies": {
-        "@napi-rs/canvas": "^0.1.74",
         "jszip": "^3.10.1",
+      },
+      "optionalDependencies": {
+        "@napi-rs/canvas": "^0.1.74",
       },
     },
   },
@@ -741,6 +743,8 @@
     "string-width-cjs/strip-ansi": ["strip-ansi@6.0.1", "", { "dependencies": { "ansi-regex": "^5.0.1" } }, "sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A=="],
 
     "strip-ansi-cjs/ansi-regex": ["ansi-regex@5.0.1", "", {}, "sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ=="],
+
+    "web/origins-image-generator": ["origins-image-generator@1.0.0", "", { "dependencies": { "@napi-rs/canvas": "^0.1.74", "jszip": "^3.10.1" } }, "sha512-lCODun2zSRiWD7aYXHW/OSgDbeW9ENNsjfHP4GkmiDvjImxxjipHWn8OlYXegsEm+YISXiewLuB+pDzEAOQycA=="],
 
     "wrap-ansi/ansi-styles": ["ansi-styles@6.2.1", "", {}, "sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug=="],
 

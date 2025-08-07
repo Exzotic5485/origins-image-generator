@@ -22,7 +22,7 @@
         "react-dropzone": "^14.2.3",
         "tailwind-merge": "^2.3.0",
         "tailwindcss-animate": "^1.0.7",
-        "origins-image-generator": "workspace:*"
+        "origins-image-generator": "^1.0.0"
     },
     "devDependencies": {
         "@types/react": "^18.3.3",
